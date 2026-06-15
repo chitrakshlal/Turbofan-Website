@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turbofan Engine Viewer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #dce1e8;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #dce1e8;
+      color: #444444;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+    }
+
+    #info-panel {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      bottom: 1.25rem;
+      width: min(20rem, calc(100vw - 2.5rem));
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      background: rgba(12, 18, 28, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 0.5rem;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #cbd5e1;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    #info-panel .panel-header {
+      padding: 1.125rem 1.25rem 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+      flex-shrink: 0;
+    }
+
+    #info-panel .panel-label {
+      display: block;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    #info-panel .panel-title {
+      font-size: 1.625rem;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    #info-panel .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    #info-panel .panel-placeholder {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: #64748b;
+    }
+
+    #info-panel .panel-sections {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    #info-panel .panel-section {
+      padding: 0.875rem 0;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    }
+
+    #info-panel .panel-section:first-child {
+      padding-top: 0;
+    }
+
+    #info-panel .panel-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    #info-panel .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin: 0 0 0.75rem;
+    }
+
+    #info-panel .section-heading::before {
+      content: '';
+      display: block;
+      width: 0.1875rem;
+      height: 0.875rem;
+      background: #38bdf8;
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+
+    #info-panel .section-text {
+      font-size: 0.8125rem;
+      line-height: 1.65;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    #info-panel .section-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #info-panel .section-list li {
+      position: relative;
+      padding-left: 1rem;
+      margin-bottom: 0.4375rem;
+      font-size: 0.8125rem;
+      line-height: 1.55;
+      color: #cbd5e1;
+    }
+
+    #info-panel .section-list li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    #info-panel .section-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    #info-panel .panel-hint {
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      font-size: 0.6875rem;
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      color: #475569;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    #info-panel .panel-hint kbd {
+      display: inline-block;
+      padding: 0.125rem 0.375rem;
+      font-size: 0.625rem;
+      font-family: inherit;
+      background: rgba(148, 163, 184, 0.1);
+      border-radius: 0.1875rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      color: #94a3b8;
+    }
+
+    @media (max-width: 640px) {
+      #info-panel {
+        top: auto;
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        width: auto;
+        max-height: 55vh;
+      }
+
+      #info-panel .panel-header {
+        padding: 1.125rem 1.25rem 1rem;
+      }
+
+      #info-panel .panel-body {
+        padding: 1rem 1.25rem 1.25rem;
+      }
+
+      #info-panel .panel-title {
+        font-size: 1.375rem;
+      }
+
+      #info-panel .panel-hint {
+        padding: 0.75rem 1.25rem;
+      }
+    }
+
+    #left-controls {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      width: min(20rem, calc(100vw - 2.5rem));
+    }
+
+    #camera-controls {
+      padding: 0.875rem 1rem;
+      background: rgba(12, 18, 28, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    #camera-controls .camera-panel-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #64748b;
+    }
+
+    .camera-preset-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .camera-preset-btn {
+      flex: 1 1 calc(50% - 0.1875rem);
+      min-width: calc(50% - 0.1875rem);
+      padding: 0.4375rem 0.5rem;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      background: rgba(20, 30, 48, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 0.3125rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .camera-preset-btn:hover {
+      background: rgba(28, 40, 62, 0.85);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #e2e8f0;
+    }
+
+    .camera-preset-btn.active {
+      border-color: rgba(56, 189, 248, 0.55);
+      color: #38bdf8;
+      background: rgba(16, 28, 46, 0.96);
+    }
+
+    .camera-preset-btn.reset-view {
+      flex: 1 1 100%;
+      min-width: 100%;
+      margin-top: 0.125rem;
+    }
+
+    .camera-preset-btn.reset-view.active {
+      color: #94a3b8;
+      border-color: rgba(148, 163, 184, 0.45);
+    }
+
+    .camera-preset-btn.exploded-view {
+      flex: 1 1 100%;
+      min-width: 100%;
+      margin-top: 0.125rem;
+    }
+
+    .camera-preset-btn.exploded-view.active {
+      border-color: rgba(167, 139, 250, 0.55);
+      color: #a78bfa;
+    }
+
+    #exploded-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(4, 8, 16, 0.88);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    #exploded-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #exploded-overlay .exploded-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    #exploded-overlay .exploded-close-btn:hover {
+      color: #e2e8f0;
+      border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    #exploded-overlay .exploded-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      max-width: min(90vw, 56rem);
+      width: 100%;
+      transform: translateY(12px);
+      transition: transform 0.35s ease;
+    }
+
+    #exploded-overlay.visible .exploded-content {
+      transform: translateY(0);
+    }
+
+    #exploded-overlay .exploded-title {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+      text-align: center;
+      margin: 0;
+    }
+
+    #exploded-overlay .exploded-image-container {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(12, 18, 28, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 0.5rem;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    }
+
+    #exploded-overlay .exploded-image-container img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - 10rem);
+      object-fit: contain;
+    }
+
+    #engine-controls {
+      width: 100%;
+      padding: 1rem 1.125rem;
+      background: rgba(12, 18, 28, 0.94);
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      border-radius: 0.5rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .throttle-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    #engine-controls .engine-mode-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #cbd5e1;
+    }
+
+    #throttle-percent {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #38bdf8;
+      letter-spacing: 0.04em;
+    }
+
+    .throttle-track-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.75rem 0.625rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 0.375rem;
+    }
+
+    #throttle-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 0.5625rem;
+      border-radius: 0.3125rem;
+      background: linear-gradient(
+        to right,
+        #0f172a 0%,
+        #334155 45%,
+        #64748b 100%
+      );
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      outline: none;
+      cursor: pointer;
+    }
+
+    #throttle-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 3px solid #e0f2fe;
+      box-shadow: 0 0 0 2px #0c121c, 0 0 14px rgba(56, 189, 248, 0.6);
+      cursor: pointer;
+      transition: box-shadow 0.2s ease, transform 0.15s ease;
+    }
+
+    #throttle-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 0 2px #0c121c, 0 0 18px rgba(56, 189, 248, 0.85);
+      transform: scale(1.08);
+    }
+
+    #throttle-slider::-moz-range-thumb {
+      width: 1.375rem;
+      height: 1.375rem;
+      border-radius: 50%;
+      background: #38bdf8;
+      border: 3px solid #e0f2fe;
+      box-shadow: 0 0 0 2px #0c121c, 0 0 14px rgba(56, 189, 248, 0.6);
+      cursor: pointer;
+    }
+
+    #throttle-slider::-moz-range-track {
+      height: 0.5625rem;
+      border-radius: 0.3125rem;
+      background: linear-gradient(
+        to right,
+        #0f172a 0%,
+        #334155 45%,
+        #64748b 100%
+      );
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .throttle-markers {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 0.25rem;
+    }
+
+    .throttle-markers span {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+    }
+
+    .throttle-markers span:nth-child(2) {
+      color: #64748b;
+    }
+
+    .throttle-markers span:nth-child(3) {
+      color: #fb923c;
+    }
+
+    #engine-spool-status {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      letter-spacing: 0.06em;
+      color: #475569;
+    }
+
+    #engine-spool-status .spool-phase {
+      color: #64748b;
+    }
+
+    #engine-spool-status .spool-phase.n2 {
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading turbofan engine…</div>
+
+  <aside id="info-panel">
+    <header class="panel-header">
+      <span class="panel-label">Engine Component</span>
+      <h2 class="panel-title" id="panel-title">Select a Part</h2>
+    </header>
+    <div class="panel-body">
+      <p class="panel-placeholder" id="panel-placeholder">
+        Select a component to view engineering data.
+      </p>
+      <div id="panel-sections" class="panel-sections" hidden></div>
+    </div>
+    <p class="panel-hint">
+      Drag to rotate · Scroll to zoom · Right-click to pan
+    </p>
+  </aside>
+
+  <div id="left-controls">
+    <div id="camera-controls">
+      <span class="camera-panel-label">Camera Navigation</span>
+      <div class="camera-preset-buttons">
+        <button type="button" class="camera-preset-btn" data-view="front">Front View</button>
+        <button type="button" class="camera-preset-btn" data-view="side">Side View</button>
+        <button type="button" class="camera-preset-btn" data-view="bottom">Bottom View</button>
+        <button type="button" class="camera-preset-btn" data-view="rear">Rear View (Turbine)</button>
+        <button type="button" class="camera-preset-btn reset-view" data-view="reset">Reset View</button>
+        <button type="button" id="exploded-view-btn" class="camera-preset-btn exploded-view">Exploded View</button>
+      </div>
+    </div>
+
+    <div id="engine-controls">
+      <div class="throttle-header">
+        <span class="engine-mode-label">Engine Throttle</span>
+        <span id="throttle-percent">0%</span>
+      </div>
+      <div class="throttle-track-wrap">
+        <input type="range" id="throttle-slider" min="0" max="1" step="0.001" value="0" />
+        <div class="throttle-markers">
+          <span>Idle</span>
+          <span>Cruise</span>
+          <span>Max</span>
+        </div>
+      </div>
+      <div id="engine-spool-status">IDLE · <span class="spool-phase">N1</span></div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    // -------------------------------------------------------------------------
+    // Part catalog
+    // -------------------------------------------------------------------------
+
+    const PART_CATALOG = {
+      NACELLE: {
+        title: 'Nacelle',
+        overview:
+          'The nacelle is the aerodynamic outer housing that surrounds the engine. It provides a streamlined shape for efficient airflow while protecting internal engine components from the external environment.',
+        purpose: [
+          'Directs and smooths incoming airflow into the engine fan',
+          'Reduces aerodynamic drag during flight',
+          'Protects internal engine components from weather, debris, and environmental exposure',
+          'Supports engine mounting and integration with the aircraft structure',
+        ],
+        engineeringSignificance:
+          'The nacelle plays a critical role in overall aircraft efficiency. A well-designed nacelle improves airflow quality entering the engine, reduces drag, and contributes to lower fuel consumption and improved aerodynamic performance.',
+      },
+      CORE_TURBINE: {
+        title: 'Core',
+        overview:
+          'The engine core contains the primary rotating assemblies responsible for compressing air, extracting energy from combustion gases, and transmitting power through the engine. It represents the heart of the turbofan propulsion system.',
+        purpose: [
+          'Houses the rotating shaft and turbine assemblies',
+          'Transfers mechanical power throughout the engine',
+          'Extracts energy from high-temperature combustion gases',
+          'Enables continuous operation of the compressor and turbine stages',
+        ],
+        engineeringSignificance:
+          'The engine core is responsible for converting thermal energy into useful mechanical work. Its performance directly affects engine efficiency, thrust generation, fuel consumption, and overall reliability of the propulsion system.',
+      },
+    };
+
+    /** Display labels for console output. */
+    const GROUP_LABELS = {
+      NACELLE: 'Nacelle',
+      CORE_TURBINE: 'Engine Core',
+    };
+
+    /** partId -> THREE.Mesh[] */
+    const partsRegistry = new Map(
+      Object.keys(PART_CATALOG).map((id) => [id, []])
+    );
+
+    /** All meshes in the GLB — used for raycasting. */
+    const raycastMeshes = [];
+
+    /** Collect all mesh objects (legacy ref, mirrors raycastMeshes). */
+    const clickableMeshes = raycastMeshes;
+
+    let selectedPart = null;
+    let hoveredPart = null;
+    let selectedMeshes = [];
+    let hoveredMeshes = [];
+
+    const originalMaterials = new WeakMap();
+    const SELECTION_EMISSIVE = new THREE.Color(0x66ccff);
+    const HOVER_EMISSIVE = new THREE.Color(0xa8e4ff);
+    const SELECTION_EMISSIVE_INTENSITY = 0.85;
+    const HOVER_EMISSIVE_INTENSITY = 0.38;
+    const HOVER_SUBTLE_INTENSITY = 0.18;
+
+    // -------------------------------------------------------------------------
+    // Scene setup
+    // -------------------------------------------------------------------------
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xdce1e8);
+    scene.fog = new THREE.Fog(0xdce1e8, 18, 55);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.08;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    document.body.appendChild(renderer.domElement);
+
+    const pmremGenerator = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.06).texture;
+    pmremGenerator.dispose();
+
+    // -------------------------------------------------------------------------
+    // Studio lighting — ambient + key + rim
+    // -------------------------------------------------------------------------
+
+    const ambientLight = new THREE.AmbientLight(0xe8ecf2, 0.3);
+    scene.add(ambientLight);
+
+    const keyLight = new THREE.DirectionalLight(0xfff5eb, 1.15);
+    keyLight.position.set(7, 11, 5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(4096, 4096);
+    keyLight.shadow.camera.near = 0.5;
+    keyLight.shadow.camera.far = 40;
+    keyLight.shadow.camera.left = -10;
+    keyLight.shadow.camera.right = 10;
+    keyLight.shadow.camera.top = 10;
+    keyLight.shadow.camera.bottom = -10;
+    keyLight.shadow.bias = -0.00015;
+    keyLight.shadow.normalBias = 0.025;
+    keyLight.shadow.radius = 3;
+    keyLight.target.position.set(0, 0, 0);
+    scene.add(keyLight);
+    scene.add(keyLight.target);
+
+    const rimLight = new THREE.DirectionalLight(0xa8c8e8, 0.62);
+    rimLight.position.set(-4, 5, -9);
+    scene.add(rimLight);
+
+    const fillLight = new THREE.DirectionalLight(0xc8d4e8, 0.2);
+    fillLight.position.set(-8, 2, 4);
+    scene.add(fillLight);
+
+    // -------------------------------------------------------------------------
+    // Orbit controls
+    // -------------------------------------------------------------------------
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.screenSpacePanning = true;
+    controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN,
+    };
+
+    // -------------------------------------------------------------------------
+    // Camera presets & smooth transitions
+    // -------------------------------------------------------------------------
+
+    const initialCameraState = {
+      position: new THREE.Vector3(),
+      target: new THREE.Vector3(),
+    };
+
+    const cameraPresets = {
+      front: { position: new THREE.Vector3(), target: new THREE.Vector3() },
+      side: { position: new THREE.Vector3(), target: new THREE.Vector3() },
+      bottom: { position: new THREE.Vector3(), target: new THREE.Vector3() },
+      rear: { position: new THREE.Vector3(), target: new THREE.Vector3() },
+      reset: { position: new THREE.Vector3(), target: new THREE.Vector3() },
+    };
+
+    let activeCameraView = 'reset';
+    let cameraTransition = null;
+    const CAMERA_TRANSITION_SPEED = 4.5;
+
+    const cameraPresetButtons = document.querySelectorAll('.camera-preset-btn');
+
+    function captureInitialCameraState() {
+      initialCameraState.position.copy(camera.position);
+      initialCameraState.target.copy(controls.target);
+    }
+
+    function getCoreCenter() {
+      const coreMeshes = partsRegistry.get('CORE_TURBINE');
+      if (coreMeshes.length === 0) {
+        return controls.target.clone();
+      }
+
+      const box = new THREE.Box3();
+      coreMeshes.forEach((mesh) => box.expandByObject(mesh));
+      return box.getCenter(new THREE.Vector3());
+    }
+
+    function buildCameraPresets() {
+      const center = controls.target.clone();
+      const baseDistance = camera.position.distanceTo(center);
+      const coreCenter = getCoreCenter();
+      const rearDistance = baseDistance * 0.72;
+
+      cameraPresets.front.position.copy(center).add(new THREE.Vector3(0, 0, baseDistance));
+      cameraPresets.front.target.copy(center);
+
+      cameraPresets.side.position.copy(center).add(new THREE.Vector3(baseDistance, 0, 0));
+      cameraPresets.side.target.copy(center);
+
+      cameraPresets.bottom.position.copy(center).add(new THREE.Vector3(0, -baseDistance, 0));
+      cameraPresets.bottom.target.copy(center);
+
+      cameraPresets.rear.position.copy(center).add(new THREE.Vector3(0, 0, -rearDistance));
+      cameraPresets.rear.target.copy(center).lerp(coreCenter, 0.35);
+
+      cameraPresets.reset.position.copy(initialCameraState.position);
+      cameraPresets.reset.target.copy(initialCameraState.target);
+    }
+
+    function updateCameraPresetUI() {
+      cameraPresetButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.view === activeCameraView);
+      });
+    }
+
+    function beginCameraTransition(toPosition, toTarget, viewName) {
+      cameraTransition = {
+        toPosition: toPosition.clone(),
+        toTarget: toTarget.clone(),
+      };
+      activeCameraView = viewName;
+      updateCameraPresetUI();
+    }
+
+    function resetCameraView() {
+      beginCameraTransition(
+        initialCameraState.position,
+        initialCameraState.target,
+        'reset'
+      );
+    }
+
+    function setCameraView(viewName) {
+      if (viewName === 'reset') {
+        resetCameraView();
+        return;
+      }
+
+      const preset = cameraPresets[viewName];
+      if (!preset) return;
+
+      beginCameraTransition(preset.position, preset.target, viewName);
+    }
+
+    function updateCameraTransition(deltaTime) {
+      if (!cameraTransition) return;
+
+      const factor = 1 - Math.exp(-CAMERA_TRANSITION_SPEED * deltaTime);
+      camera.position.lerp(cameraTransition.toPosition, factor);
+      controls.target.lerp(cameraTransition.toTarget, factor);
+
+      const positionDone = camera.position.distanceTo(cameraTransition.toPosition) < 0.008;
+      const targetDone = controls.target.distanceTo(cameraTransition.toTarget) < 0.008;
+
+      if (positionDone && targetDone) {
+        camera.position.copy(cameraTransition.toPosition);
+        controls.target.copy(cameraTransition.toTarget);
+        cameraTransition = null;
+      }
+
+      controls.update();
+    }
+
+    cameraPresetButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setCameraView(btn.dataset.view);
+      });
+    });
+
+    // -------------------------------------------------------------------------
+    // Exploded view overlay (CAD reference toggle)
+    // -------------------------------------------------------------------------
+
+    const EXPLODED_IMAGE_PATH = './Assests/Images/Exploded%20View.png';
+
+    let explodedViewActive = false;
+    let explodedOverlayEl = null;
+    let explodedImageEl = null;
+
+    const explodedViewBtn = document.getElementById('exploded-view-btn');
+
+    function loadExplodedImage(img) {
+      img.src = EXPLODED_IMAGE_PATH;
+    }
+
+    function createExplodedOverlay() {
+      const overlay = document.createElement('div');
+      overlay.id = 'exploded-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'exploded-close-btn';
+      closeBtn.setAttribute('aria-label', 'Close exploded view');
+      closeBtn.textContent = '×';
+
+      const content = document.createElement('div');
+      content.className = 'exploded-content';
+
+      const title = document.createElement('h2');
+      title.className = 'exploded-title';
+      title.textContent = 'Engine Exploded Assembly (CAD Reference)';
+
+      const imgContainer = document.createElement('div');
+      imgContainer.className = 'exploded-image-container';
+
+      const img = document.createElement('img');
+      img.alt = 'Engine exploded assembly CAD reference diagram';
+      loadExplodedImage(img);
+      explodedImageEl = img;
+
+      imgContainer.appendChild(img);
+      content.appendChild(title);
+      content.appendChild(imgContainer);
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(content);
+      document.body.appendChild(overlay);
+
+      closeBtn.addEventListener('click', closeExplodedView);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeExplodedView();
+        }
+      });
+
+      return overlay;
+    }
+
+    function openExplodedView() {
+      if (!explodedOverlayEl) {
+        explodedOverlayEl = createExplodedOverlay();
+      } else if (explodedImageEl) {
+        loadExplodedImage(explodedImageEl);
+      }
+
+      explodedViewActive = true;
+      clearHover();
+      controls.enabled = false;
+      renderer.domElement.style.cursor = 'default';
+      explodedViewBtn.classList.add('active');
+
+      explodedOverlayEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        explodedOverlayEl.classList.add('visible');
+      });
+    }
+
+    function closeExplodedView() {
+      if (!explodedOverlayEl || !explodedViewActive) return;
+
+      explodedOverlayEl.classList.remove('visible');
+      explodedOverlayEl.setAttribute('aria-hidden', 'true');
+
+      let closeFinished = false;
+
+      const finishClose = () => {
+        if (closeFinished) return;
+        closeFinished = true;
+        explodedViewActive = false;
+        controls.enabled = true;
+        explodedViewBtn.classList.remove('active');
+        refreshHighlights();
+        renderer.domElement.style.cursor = 'grab';
+      };
+
+      explodedOverlayEl.addEventListener('transitionend', finishClose, { once: true });
+      setTimeout(finishClose, 400);
+    }
+
+    function toggleExplodedView() {
+      if (explodedViewActive) {
+        closeExplodedView();
+      } else {
+        openExplodedView();
+      }
+    }
+
+    explodedViewBtn.addEventListener('click', toggleExplodedView);
+
+    // -------------------------------------------------------------------------
+    // Raycasting & interaction
+    // -------------------------------------------------------------------------
+
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    const panelTitle = document.getElementById('panel-title');
+    const panelPlaceholder = document.getElementById('panel-placeholder');
+    const panelSections = document.getElementById('panel-sections');
+
+    /** Group lookup — Updated_Turbofan.glb meshes: Nacelle, Core */
+    function getGroupForMesh(mesh) {
+      if (mesh.name === 'Nacelle') {
+        return 'NACELLE';
+      }
+
+      if (mesh.name === 'Core') {
+        return 'CORE_TURBINE';
+      }
+
+      return null;
+    }
+
+    function getGroupLogLabel(groupId) {
+      if (groupId === 'NACELLE') return 'Nacelle';
+      if (groupId === 'CORE_TURBINE') return 'Engine Core';
+      return 'None';
+    }
+
+    function raycastHits() {
+      raycaster.setFromCamera(pointer, camera);
+      return raycaster.intersectObjects(raycastMeshes, false);
+    }
+
+    function cloneMaterialSlots(material) {
+      if (Array.isArray(material)) {
+        return material.map((mat) => mat.clone());
+      }
+      return material.clone();
+    }
+
+    function polishMaterial(material, meshName) {
+      ['map', 'emissiveMap', 'metalnessMap', 'roughnessMap'].forEach((mapName) => {
+        if (material[mapName]) {
+          material[mapName].colorSpace = THREE.SRGBColorSpace;
+        }
+      });
+
+      if (material.isMeshStandardMaterial || material.isMeshPhysicalMaterial) {
+        if (meshName === 'Core') {
+          material.metalness = THREE.MathUtils.clamp(
+            material.metalness !== undefined ? material.metalness * 0.55 + 0.52 : 0.78,
+            0,
+            1
+          );
+          material.roughness = THREE.MathUtils.clamp(
+            material.roughness !== undefined ? material.roughness * 0.4 + 0.1 : 0.22,
+            0.08,
+            1
+          );
+          material.envMapIntensity = 1.65;
+        } else if (meshName === 'Nacelle') {
+          material.metalness = THREE.MathUtils.clamp(
+            material.metalness !== undefined ? material.metalness * 0.45 + 0.14 : 0.28,
+            0,
+            1
+          );
+          material.roughness = THREE.MathUtils.clamp(
+            material.roughness !== undefined ? material.roughness * 0.8 + 0.3 : 0.58,
+            0.22,
+            1
+          );
+          material.envMapIntensity = 1.2;
+        } else {
+          material.envMapIntensity = 1.4;
+        }
+      }
+
+      material.needsUpdate = true;
+    }
+
+    /** Isolate mesh materials on load — one exclusive copy per mesh, stored in WeakMap. */
+    function storeOriginalMaterials(mesh) {
+      const isolated = cloneMaterialSlots(mesh.material);
+
+      if (Array.isArray(isolated)) {
+        isolated.forEach((mat) => polishMaterial(mat, mesh.name));
+      } else {
+        polishMaterial(isolated, mesh.name);
+      }
+
+      originalMaterials.set(mesh, isolated);
+      mesh.material = isolated;
+    }
+
+    function createHighlightMaterial(sourceMaterial, emissiveColor, intensity) {
+      const highlight = sourceMaterial.clone();
+      if (highlight.emissive) {
+        highlight.emissive.copy(emissiveColor);
+        highlight.emissiveIntensity = intensity;
+      }
+      highlight.needsUpdate = true;
+      return highlight;
+    }
+
+    function disposeMaterialInstance(material) {
+      if (Array.isArray(material)) {
+        material.forEach((mat) => mat.dispose());
+      } else {
+        material.dispose();
+      }
+    }
+
+    function restoreOriginalMaterial(mesh) {
+      const original = originalMaterials.get(mesh);
+      if (!original) return;
+
+      const current = mesh.material;
+
+      if (current !== original) {
+        disposeMaterialInstance(current);
+      }
+
+      mesh.material = original;
+    }
+
+    function applyHighlightToMesh(mesh, emissiveColor, intensity) {
+      const original = originalMaterials.get(mesh);
+      if (!original) return;
+
+      const current = mesh.material;
+      let highlighted;
+
+      if (Array.isArray(original)) {
+        highlighted = original.map((mat) =>
+          createHighlightMaterial(mat, emissiveColor, intensity)
+        );
+      } else {
+        highlighted = createHighlightMaterial(original, emissiveColor, intensity);
+      }
+
+      if (current !== original) {
+        disposeMaterialInstance(current);
+      }
+
+      mesh.material = highlighted;
+    }
+
+    function refreshHighlights() {
+      raycastMeshes.forEach((mesh) => {
+        const groupId = getGroupForMesh(mesh);
+        const isSelected = selectedPart !== null && groupId === selectedPart;
+        const isHovered = hoveredPart !== null && groupId === hoveredPart;
+
+        if (isSelected) {
+          applyHighlightToMesh(mesh, SELECTION_EMISSIVE, SELECTION_EMISSIVE_INTENSITY);
+        } else if (isHovered && selectedPart === null) {
+          applyHighlightToMesh(mesh, HOVER_EMISSIVE, HOVER_EMISSIVE_INTENSITY);
+        } else if (isHovered && selectedPart !== null && hoveredPart !== selectedPart) {
+          applyHighlightToMesh(mesh, HOVER_EMISSIVE, HOVER_SUBTLE_INTENSITY);
+        } else {
+          restoreOriginalMaterial(mesh);
+        }
+      });
+    }
+
+    function clearHover() {
+      hoveredPart = null;
+      hoveredMeshes = [];
+      refreshHighlights();
+    }
+
+    function applyHoverHighlight(groupId) {
+      hoveredPart = groupId;
+      hoveredMeshes = groupId ? [...partsRegistry.get(groupId)] : [];
+      refreshHighlights();
+    }
+
+    function clearSelection() {
+      selectedPart = null;
+      selectedMeshes = [];
+      updatePanel(null);
+      refreshHighlights();
+    }
+
+    function applySelectionHighlight(groupId) {
+      selectedPart = groupId;
+      selectedMeshes = [...partsRegistry.get(groupId)];
+      refreshHighlights();
+    }
+
+    function updatePanel(groupId) {
+      if (!groupId) {
+        panelTitle.textContent = 'Select a Part';
+        panelPlaceholder.textContent = 'Select a component to view engineering data.';
+        panelPlaceholder.hidden = false;
+        panelSections.hidden = true;
+        panelSections.replaceChildren();
+        return;
+      }
+
+      const info = PART_CATALOG[groupId];
+      panelTitle.textContent = info.title;
+
+      const purposeItems = info.purpose
+        .map((item) => `<li>${item}</li>`)
+        .join('');
+
+      panelSections.innerHTML = `
+        <section class="panel-section">
+          <h3 class="section-heading">Overview</h3>
+          <p class="section-text">${info.overview}</p>
+        </section>
+        <section class="panel-section">
+          <h3 class="section-heading">Purpose</h3>
+          <ul class="section-list">${purposeItems}</ul>
+        </section>
+        <section class="panel-section">
+          <h3 class="section-heading">Engineering Significance</h3>
+          <p class="section-text">${info.engineeringSignificance}</p>
+        </section>
+      `;
+
+      panelPlaceholder.hidden = true;
+      panelSections.hidden = false;
+    }
+
+    function updatePointer(event) {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    }
+
+    function handleHover() {
+      if (explodedViewActive || raycastMeshes.length === 0) return;
+
+      const intersections = raycastHits();
+      const groupId =
+        intersections.length > 0 ? getGroupForMesh(intersections[0].object) : null;
+
+      if (groupId !== hoveredPart) {
+        if (groupId) {
+          applyHoverHighlight(groupId);
+        } else {
+          clearHover();
+        }
+      }
+
+      renderer.domElement.style.cursor = groupId ? 'pointer' : 'grab';
+    }
+
+    function handleClick() {
+      if (explodedViewActive || raycastMeshes.length === 0) return;
+
+      const intersections = raycastHits();
+
+      if (intersections.length === 0) {
+        clearSelection();
+        clearHover();
+        return;
+      }
+
+      const clickedMesh = intersections[0].object;
+      console.log('Clicked mesh:', clickedMesh.name || '(unnamed)');
+
+      const groupId = getGroupForMesh(clickedMesh);
+      if (!groupId) {
+        clearSelection();
+        clearHover();
+        return;
+      }
+
+      console.log('Selected group:', getGroupLogLabel(groupId));
+
+      applySelectionHighlight(groupId);
+      updatePanel(groupId);
+    }
+
+    function onCanvasClick(event) {
+      if (explodedViewActive || raycastMeshes.length === 0) return;
+      updatePointer(event);
+      handleClick();
+    }
+
+    function onPointerMove(event) {
+      if (explodedViewActive || raycastMeshes.length === 0) return;
+      updatePointer(event);
+      handleHover();
+    }
+
+    renderer.domElement.addEventListener('click', onCanvasClick);
+    renderer.domElement.addEventListener('pointermove', onPointerMove);
+    renderer.domElement.style.cursor = 'grab';
+
+    // -------------------------------------------------------------------------
+    // Model loading & framing
+    // -------------------------------------------------------------------------
+
+    const loadingEl = document.getElementById('loading');
+    let engineModel = null;
+
+    function frameModel(object) {
+      const box = new THREE.Box3().setFromObject(object);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+
+      object.position.sub(center);
+
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const targetSize = 4;
+      const scale = targetSize / maxDim;
+      object.scale.setScalar(scale);
+
+      const framedBox = new THREE.Box3().setFromObject(object);
+      const sphere = framedBox.getBoundingSphere(new THREE.Sphere());
+
+      controls.target.copy(sphere.center);
+
+      const fovRad = (camera.fov * Math.PI) / 180;
+      const distance = sphere.radius / Math.sin(fovRad / 2);
+      const offset = new THREE.Vector3(1.0, 0.45, 1.25).normalize();
+      camera.position.copy(sphere.center).addScaledVector(offset, distance * 1.28);
+      camera.near = distance / 100;
+      camera.far = distance * 100;
+      camera.updateProjectionMatrix();
+
+      controls.minDistance = distance * 0.35;
+      controls.maxDistance = distance * 3;
+      controls.update();
+
+      captureInitialCameraState();
+      buildCameraPresets();
+      activeCameraView = 'reset';
+      updateCameraPresetUI();
+    }
+
+    function collectMeshes(object) {
+      raycastMeshes.length = 0;
+      partsRegistry.forEach((meshes) => { meshes.length = 0; });
+
+      object.traverse((child) => {
+        if (child.isMesh) {
+          raycastMeshes.push(child);
+          storeOriginalMaterials(child);
+          child.castShadow = true;
+          child.receiveShadow = true;
+
+          const groupId = getGroupForMesh(child);
+          if (groupId && partsRegistry.has(groupId)) {
+            child.userData.groupId = groupId;
+            partsRegistry.get(groupId).push(child);
+          }
+        }
+      });
+
+      console.log('Raycast meshes collected:', raycastMeshes.length);
+      console.log('Nacelle meshes:', partsRegistry.get('NACELLE').length);
+      console.log('Engine Core meshes:', partsRegistry.get('CORE_TURBINE').length);
+    }
+
+    const MODEL_PATH = './Updated_Turbofan.glb';
+
+    const loader = new GLTFLoader();
+    const modelUrl = `${MODEL_PATH}?v=${Date.now()}`;
+    console.log('Loading GLB:', modelUrl);
+
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        engineModel = gltf.scene;
+
+        gltf.scene.traverse((obj) => {
+          if (obj.isMesh) {
+            console.log('Loaded mesh:', obj.name);
+          }
+        });
+
+        scene.add(engineModel);
+        collectMeshes(engineModel);
+        frameModel(engineModel);
+
+        loadingEl.classList.add('hidden');
+      },
+      undefined,
+      (error) => {
+        console.error('Failed to load Updated_Turbofan.glb:', error);
+        loadingEl.textContent =
+          'Failed to load model. Serve this folder over HTTP and ensure Updated_Turbofan.glb is present.';
+      }
+    );
+
+    // -------------------------------------------------------------------------
+    // Resize handling
+    // -------------------------------------------------------------------------
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    window.addEventListener('resize', onWindowResize);
+
+    // -------------------------------------------------------------------------
+    // Engine animation — throttle-driven N1/N2 spool model (Core rotation only)
+    // -------------------------------------------------------------------------
+
+    const clock = new THREE.Clock();
+
+    const RPM_IDLE = 2.8;
+    const RPM_CRUISE = 9;
+    const RPM_MAX = 20;
+
+    const SPOOL_RATES = {
+      POWER: 3.5,
+      N1: 0.9,
+      N2: 3.2,
+      RPM: 4.0,
+      DECEL: 2.1,
+    };
+
+    const N1_THRESHOLD_RATIO = 0.42;
+
+    const engineState = {
+      throttleInput: 0,
+      currentPower: 0,
+      n1Spool: 0,
+      n2Spool: 0,
+      currentRPM: 0,
+      spoolPhase: 'N1',
+      rotationAxis: null,
+    };
+
+    const throttleSlider = document.getElementById('throttle-slider');
+    const throttlePercent = document.getElementById('throttle-percent');
+    const engineSpoolStatus = document.getElementById('engine-spool-status');
+
+    function detectCoreRotationAxis(mesh) {
+      const size = new THREE.Box3().setFromObject(mesh).getSize(new THREE.Vector3());
+      if (size.x >= size.y && size.x >= size.z) return 'x';
+      if (size.y >= size.x && size.y >= size.z) return 'y';
+      return 'z';
+    }
+
+    function ensureRotationAxis() {
+      if (engineState.rotationAxis) return true;
+      const coreMeshes = partsRegistry.get('CORE_TURBINE');
+      if (coreMeshes.length === 0) return false;
+      engineState.rotationAxis = detectCoreRotationAxis(coreMeshes[0]);
+      return true;
+    }
+
+    function lerpValue(current, target, rate, deltaTime) {
+      const factor = 1 - Math.exp(-rate * deltaTime);
+      return current + (target - current) * factor;
+    }
+
+    function mapPowerToRPM(power) {
+      if (power <= 0.5) {
+        return RPM_IDLE + (RPM_CRUISE - RPM_IDLE) * (power / 0.5);
+      }
+      return RPM_CRUISE + (RPM_MAX - RPM_CRUISE) * ((power - 0.5) / 0.5);
+    }
+
+    function getPowerZone(power) {
+      if (power < 0.25) return 'IDLE';
+      if (power < 0.75) return 'CRUISE';
+      return 'MAX';
+    }
+
+    function updateThrottleUI() {
+      const pct = Math.round(engineState.throttleInput * 100);
+      throttlePercent.textContent = `${pct}%`;
+
+      const zone = getPowerZone(engineState.currentPower);
+      const phaseClass = engineState.spoolPhase === 'N2' ? 'spool-phase n2' : 'spool-phase';
+      engineSpoolStatus.innerHTML = `${zone} · <span class="${phaseClass}">${engineState.spoolPhase}</span>`;
+    }
+
+    function setThrottle(value) {
+      engineState.throttleInput = THREE.MathUtils.clamp(value, 0, 1);
+      throttleSlider.value = String(engineState.throttleInput);
+      updateThrottleUI();
+    }
+
+    function startEngine() {
+      setThrottle(0);
+      ensureRotationAxis();
+    }
+
+    function stopEngine() {
+      setThrottle(0);
+    }
+
+    function updateEngine(deltaTime) {
+      if (!ensureRotationAxis()) return;
+
+      const coreMeshes = partsRegistry.get('CORE_TURBINE');
+
+      engineState.currentPower = lerpValue(
+        engineState.currentPower,
+        engineState.throttleInput,
+        SPOOL_RATES.POWER,
+        deltaTime
+      );
+
+      engineState.n1Spool = lerpValue(
+        engineState.n1Spool,
+        engineState.currentPower,
+        SPOOL_RATES.N1,
+        deltaTime
+      );
+
+      const n1Gate = engineState.currentPower > 0.01
+        ? Math.min(1, engineState.n1Spool / (engineState.currentPower * N1_THRESHOLD_RATIO))
+        : 0;
+      const n2Target =
+        engineState.n1Spool + (engineState.currentPower - engineState.n1Spool) * n1Gate;
+
+      engineState.n2Spool = lerpValue(
+        engineState.n2Spool,
+        n2Target,
+        SPOOL_RATES.N2,
+        deltaTime
+      );
+
+      const n1RPM = mapPowerToRPM(engineState.n1Spool);
+      const n2RPM = mapPowerToRPM(engineState.n2Spool);
+      const inN1Phase =
+        engineState.currentPower > 0.05 &&
+        engineState.n1Spool < engineState.currentPower * N1_THRESHOLD_RATIO;
+
+      if (inN1Phase) {
+        engineState.spoolPhase = 'N1';
+      } else {
+        engineState.spoolPhase = 'N2';
+      }
+
+      const commandedRPM = inN1Phase
+        ? n1RPM
+        : n1RPM * 0.25 + n2RPM * 0.75;
+
+      const rpmRate =
+        commandedRPM < engineState.currentRPM ? SPOOL_RATES.DECEL : SPOOL_RATES.RPM;
+
+      engineState.currentRPM = lerpValue(
+        engineState.currentRPM,
+        commandedRPM,
+        rpmRate,
+        deltaTime
+      );
+
+      const deltaAngle = engineState.currentRPM * deltaTime;
+      const axis = engineState.rotationAxis;
+
+      coreMeshes.forEach((mesh) => {
+        mesh.rotation[axis] += deltaAngle;
+      });
+
+      updateThrottleUI();
+    }
+
+    throttleSlider.addEventListener('input', () => {
+      engineState.throttleInput = parseFloat(throttleSlider.value);
+      updateThrottleUI();
+    });
+
+    // -------------------------------------------------------------------------
+    // Render loop
+    // -------------------------------------------------------------------------
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const deltaTime = clock.getDelta();
+      updateEngine(deltaTime);
+      updateCameraTransition(deltaTime);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

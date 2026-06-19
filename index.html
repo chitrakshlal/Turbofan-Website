@@ -43,6 +43,55 @@
       opacity: 0;
     }
 
+    #analysis-disclaimer {
+      position: fixed;
+      top: 1.25rem;
+      left: 1.25rem;
+      z-index: 5;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      max-width: min(20rem, calc(100vw - 2.5rem));
+      padding: 0.75rem 0.875rem;
+      background: #fde047;
+      border: 1px solid #eab308;
+      border-radius: 0.5rem;
+      box-shadow: 0 8px 24px rgba(113, 63, 18, 0.18);
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #analysis-disclaimer .disclaimer-icon {
+      flex-shrink: 0;
+      width: 1.375rem;
+      height: 1.375rem;
+      margin-top: 0.0625rem;
+      color: #713f12;
+    }
+
+    #analysis-disclaimer .disclaimer-icon svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #analysis-disclaimer .disclaimer-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #analysis-disclaimer p {
+      font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 1.55;
+      letter-spacing: 0.04em;
+      color: #713f12;
+      margin: 0;
+    }
+
+    #analysis-disclaimer p + p {
+      margin-top: 0.375rem;
+    }
+
     #info-panel {
       position: fixed;
       top: 1.25rem;
@@ -239,7 +288,8 @@
       width: min(20rem, calc(100vw - 2.5rem));
     }
 
-    #camera-controls {
+    #analysis-controls,
+    #exploded-controls {
       padding: 0.875rem 1rem;
       background: rgba(12, 18, 28, 0.94);
       border: 1px solid rgba(148, 163, 184, 0.18);
@@ -250,7 +300,12 @@
       gap: 0.5rem;
     }
 
-    #camera-controls .camera-panel-label {
+    #analysis-controls {
+      border-color: rgba(56, 189, 248, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(56, 189, 248, 0.08);
+    }
+
+    .controls-panel-label {
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 0.625rem;
       font-weight: 600;
@@ -259,61 +314,1026 @@
       color: #64748b;
     }
 
-    .camera-preset-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.375rem;
-    }
-
     .camera-preset-btn {
-      flex: 1 1 calc(50% - 0.1875rem);
-      min-width: calc(50% - 0.1875rem);
-      padding: 0.4375rem 0.5rem;
+      width: 100%;
+      padding: 0.6875rem 0.75rem;
       font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #94a3b8;
-      background: rgba(20, 30, 48, 0.6);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      border-radius: 0.3125rem;
+      color: #e2e8f0;
+      background: rgba(24, 36, 58, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
       cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .camera-preset-btn:hover {
-      background: rgba(28, 40, 62, 0.85);
-      border-color: rgba(56, 189, 248, 0.4);
-      color: #e2e8f0;
-    }
-
-    .camera-preset-btn.active {
-      border-color: rgba(56, 189, 248, 0.55);
-      color: #38bdf8;
-      background: rgba(16, 28, 46, 0.96);
-    }
-
-    .camera-preset-btn.reset-view {
-      flex: 1 1 100%;
-      min-width: 100%;
-      margin-top: 0.125rem;
-    }
-
-    .camera-preset-btn.reset-view.active {
-      color: #94a3b8;
-      border-color: rgba(148, 163, 184, 0.45);
-    }
-
-    .camera-preset-btn.exploded-view {
-      flex: 1 1 100%;
-      min-width: 100%;
-      margin-top: 0.125rem;
+      background: rgba(32, 48, 74, 0.98);
+      border-color: rgba(56, 189, 248, 0.65);
+      color: #f8fafc;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.18);
     }
 
     .camera-preset-btn.exploded-view.active {
-      border-color: rgba(167, 139, 250, 0.55);
-      color: #a78bfa;
+      border-color: rgba(167, 139, 250, 0.75);
+      color: #ddd6fe;
+      background: rgba(36, 28, 58, 0.98);
+      box-shadow: 0 4px 16px rgba(167, 139, 250, 0.22);
+    }
+
+    .analysis-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .analysis-btn {
+      width: 100%;
+      padding: 0.6875rem 0.75rem;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e2e8f0;
+      background: rgba(24, 36, 58, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 0.375rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .analysis-btn:hover:not(:disabled) {
+      background: rgba(32, 48, 74, 0.98);
+      border-color: rgba(56, 189, 248, 0.65);
+      color: #f8fafc;
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.18);
+    }
+
+    .analysis-btn.active {
+      border-color: rgba(56, 189, 248, 0.75);
+      color: #7dd3fc;
+      background: rgba(16, 36, 58, 0.98);
+      box-shadow: 0 4px 16px rgba(56, 189, 248, 0.22);
+    }
+
+    .analysis-btn.stub {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    #stress-analysis-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(4, 8, 16, 0.55);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    #stress-analysis-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #stress-analysis-overlay .stress-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      z-index: 1;
+    }
+
+    #stress-analysis-overlay .stress-close-btn:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #stress-analysis-overlay .stress-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      width: min(56rem, 100%);
+      max-height: calc(100vh - 3rem);
+      padding: 1.5rem;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 0.625rem;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+      transform: translateY(16px);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    #stress-analysis-overlay.visible .stress-panel {
+      transform: translateY(0);
+    }
+
+    #stress-analysis-overlay .stress-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    #stress-analysis-overlay .stress-panel-title {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin: 0;
+    }
+
+    #stress-analysis-overlay .stress-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    #stress-analysis-overlay .stress-image-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      padding: 0.875rem;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 0.5rem;
+      min-width: 0;
+    }
+
+    #stress-analysis-overlay .stress-image-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    #stress-analysis-overlay .stress-image-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: clamp(14rem, 32vh, 20rem);
+      background: rgba(12, 18, 28, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+
+    #stress-analysis-overlay .stress-image-wrap.overview-wrap img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    #stress-analysis-overlay .stress-image-wrap.stress-zoom-trigger {
+      position: relative;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+      background: rgba(12, 18, 28, 0.96);
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #stress-analysis-overlay .stress-image-wrap.stress-zoom-trigger:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2);
+    }
+
+    #stress-analysis-overlay .stress-image-wrap.stress-zoom-trigger img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    #stress-analysis-overlay .stress-zoom-hint {
+      position: absolute;
+      bottom: 0.625rem;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.3125rem 0.625rem;
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #f8fafc;
+      background: rgba(14, 116, 178, 0.92);
+      border: 1px solid rgba(186, 230, 253, 0.45);
+      border-radius: 0.25rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #stress-image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(4, 8, 16, 0.62);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #stress-image-lightbox.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #stress-image-lightbox .stress-lightbox-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    #stress-image-lightbox .stress-lightbox-close:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #stress-image-lightbox img {
+      display: block;
+      max-width: min(92vw, 100%);
+      max-height: min(88vh, 100%);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      box-shadow: 0 20px 56px rgba(0, 0, 0, 0.45);
+    }
+
+    #stress-analysis-overlay .stress-summary {
+      padding: 1rem 1.125rem;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.5rem;
+    }
+
+    #stress-analysis-overlay .stress-summary-heading {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 0.75rem;
+    }
+
+    #stress-analysis-overlay .stress-summary-text {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    #stress-analysis-overlay .stress-summary-text strong {
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      #stress-analysis-overlay .stress-images {
+        grid-template-columns: 1fr;
+      }
+
+      #stress-analysis-overlay .stress-panel {
+        padding: 1.25rem;
+      }
+    }
+
+    #strain-analysis-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(4, 8, 16, 0.55);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    #strain-analysis-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #strain-analysis-overlay .strain-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      z-index: 1;
+    }
+
+    #strain-analysis-overlay .strain-close-btn:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #strain-analysis-overlay .strain-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      width: min(56rem, 100%);
+      max-height: calc(100vh - 3rem);
+      padding: 1.5rem;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 0.625rem;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+      transform: translateY(16px);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    #strain-analysis-overlay.visible .strain-panel {
+      transform: translateY(0);
+    }
+
+    #strain-analysis-overlay .strain-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    #strain-analysis-overlay .strain-panel-title {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin: 0;
+    }
+
+    #strain-analysis-overlay .strain-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    #strain-analysis-overlay .strain-image-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      padding: 0.875rem;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 0.5rem;
+      min-width: 0;
+    }
+
+    #strain-analysis-overlay .strain-image-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin: 0;
+    }
+
+    #strain-analysis-overlay .strain-data-wrap {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      width: 100%;
+      height: clamp(14rem, 32vh, 20rem);
+      background: rgba(12, 18, 28, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+
+    #strain-analysis-overlay .strain-data-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      height: 100%;
+      padding: 0.5rem;
+    }
+
+    #strain-analysis-overlay .strain-data-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-height: 0;
+    }
+
+    #strain-analysis-overlay .strain-data-item-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.5625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    #strain-analysis-overlay .strain-data-item-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+
+    #strain-analysis-overlay .strain-data-item-image img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    #strain-analysis-overlay .strain-data-wrap.strain-zoom-trigger {
+      position: relative;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #strain-analysis-overlay .strain-data-wrap.strain-zoom-trigger:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2);
+    }
+
+    #strain-analysis-overlay .strain-zoom-hint {
+      position: absolute;
+      bottom: 0.625rem;
+      right: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      padding: 0.3125rem;
+      color: #f8fafc;
+      background: rgba(14, 116, 178, 0.92);
+      border: 1px solid rgba(186, 230, 253, 0.45);
+      border-radius: 0.25rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #strain-analysis-overlay .strain-zoom-hint svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #strain-image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(4, 8, 16, 0.62);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #strain-image-lightbox.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #strain-image-lightbox .strain-lightbox-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      z-index: 1;
+    }
+
+    #strain-image-lightbox .strain-lightbox-close:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #strain-image-lightbox .strain-lightbox-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: min(56rem, 92vw);
+      max-height: min(88vh, 100%);
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    #strain-image-lightbox .strain-lightbox-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 0.5rem;
+    }
+
+    #strain-image-lightbox .strain-lightbox-item-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    #strain-image-lightbox .strain-lightbox-item img {
+      display: block;
+      max-width: 100%;
+      max-height: min(26vh, 18rem);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    #strain-analysis-overlay .strain-summary {
+      padding: 1rem 1.125rem;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.5rem;
+    }
+
+    #strain-analysis-overlay .strain-summary-heading {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 0.75rem;
+    }
+
+    #strain-analysis-overlay .strain-summary-text {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    #strain-analysis-overlay .strain-summary-text strong {
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      #strain-analysis-overlay .strain-images {
+        grid-template-columns: 1fr;
+      }
+
+      #strain-analysis-overlay .strain-panel {
+        padding: 1.25rem;
+      }
+    }
+
+    #displacement-analysis-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(4, 8, 16, 0.55);
+      backdrop-filter: blur(16px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.35s ease, visibility 0.35s ease;
+    }
+
+    #displacement-analysis-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #displacement-analysis-overlay .displacement-close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      z-index: 1;
+    }
+
+    #displacement-analysis-overlay .displacement-close-btn:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #displacement-analysis-overlay .displacement-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      width: min(56rem, 100%);
+      max-height: calc(100vh - 3rem);
+      padding: 1.5rem;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 0.625rem;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+      overflow-y: auto;
+      transform: translateY(16px);
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    #displacement-analysis-overlay.visible .displacement-panel {
+      transform: translateY(0);
+    }
+
+    #displacement-analysis-overlay .displacement-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    #displacement-analysis-overlay .displacement-panel-title {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin: 0;
+    }
+
+    #displacement-analysis-overlay .displacement-images {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    #displacement-analysis-overlay .displacement-image-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      padding: 0.875rem;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      border-radius: 0.5rem;
+      min-width: 0;
+    }
+
+    #displacement-analysis-overlay .displacement-data-wrap {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      width: 100%;
+      height: clamp(14rem, 32vh, 20rem);
+      background: rgba(12, 18, 28, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+
+    #displacement-analysis-overlay .displacement-data-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 100%;
+      height: 100%;
+      padding: 0.5rem;
+    }
+
+    #displacement-analysis-overlay .displacement-data-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-height: 0;
+    }
+
+    #displacement-analysis-overlay .displacement-data-item-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.5625rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    #displacement-analysis-overlay .displacement-data-item-image {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(148, 163, 184, 0.1);
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+
+    #displacement-analysis-overlay .displacement-data-item-image img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    #displacement-analysis-overlay .displacement-data-wrap.displacement-zoom-trigger {
+      position: relative;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: inherit;
+      text-align: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #displacement-analysis-overlay .displacement-data-wrap.displacement-zoom-trigger:hover {
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.2);
+    }
+
+    #displacement-analysis-overlay .displacement-zoom-hint {
+      position: absolute;
+      bottom: 0.625rem;
+      right: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      padding: 0.3125rem;
+      color: #f8fafc;
+      background: rgba(14, 116, 178, 0.92);
+      border: 1px solid rgba(186, 230, 253, 0.45);
+      border-radius: 0.25rem;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #displacement-analysis-overlay .displacement-zoom-hint svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #displacement-image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background: rgba(4, 8, 16, 0.62);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    #displacement-image-lightbox.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-close {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      width: 2.25rem;
+      height: 2.25rem;
+      padding: 0;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #94a3b8;
+      background: rgba(12, 18, 28, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      z-index: 1;
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-close:hover {
+      color: #e2e8f0;
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: min(56rem, 92vw);
+      max-height: min(88vh, 100%);
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(12, 18, 28, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 0.5rem;
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-item-label {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    #displacement-image-lightbox .displacement-lightbox-item img {
+      display: block;
+      max-width: 100%;
+      max-height: min(26vh, 18rem);
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    #displacement-analysis-overlay .displacement-summary {
+      padding: 1rem 1.125rem;
+      background: rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.5rem;
+    }
+
+    #displacement-analysis-overlay .displacement-summary-heading {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin: 0 0 0.75rem;
+    }
+
+    #displacement-analysis-overlay .displacement-summary-text {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      margin: 0;
+    }
+
+    #displacement-analysis-overlay .displacement-summary-text strong {
+      color: #f1f5f9;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      #displacement-analysis-overlay .displacement-images {
+        grid-template-columns: 1fr;
+      }
+
+      #displacement-analysis-overlay .displacement-panel {
+        padding: 1.25rem;
+      }
     }
 
     #exploded-overlay {
@@ -548,6 +1568,20 @@
 <body>
   <div id="loading">Loading turbofan engine…</div>
 
+  <div id="analysis-disclaimer">
+    <span class="disclaimer-icon" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2.5 1.5 21h21L12 2.5z"/>
+        <path d="M12 8.5v6" stroke="#fde047" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="12" cy="17.2" r="1.1" fill="#fde047"/>
+      </svg>
+    </span>
+    <div class="disclaimer-text">
+      <p>Analysis Studies all based on 4800 rpm</p>
+      <p>Interactive Throttle just for visualization purposes</p>
+    </div>
+  </div>
+
   <aside id="info-panel">
     <header class="panel-header">
       <span class="panel-label">Engine Component</span>
@@ -565,16 +1599,18 @@
   </aside>
 
   <div id="left-controls">
-    <div id="camera-controls">
-      <span class="camera-panel-label">Camera Navigation</span>
-      <div class="camera-preset-buttons">
-        <button type="button" class="camera-preset-btn" data-view="front">Front View</button>
-        <button type="button" class="camera-preset-btn" data-view="side">Side View</button>
-        <button type="button" class="camera-preset-btn" data-view="bottom">Bottom View</button>
-        <button type="button" class="camera-preset-btn" data-view="rear">Rear View (Turbine)</button>
-        <button type="button" class="camera-preset-btn reset-view" data-view="reset">Reset View</button>
-        <button type="button" id="exploded-view-btn" class="camera-preset-btn exploded-view">Exploded View</button>
+    <div id="analysis-controls">
+      <span class="controls-panel-label">Engine Analysis</span>
+      <div class="analysis-buttons">
+        <button type="button" id="stress-analysis-btn" class="analysis-btn">Stress Analysis</button>
+        <button type="button" id="strain-analysis-btn" class="analysis-btn">Strain Analysis</button>
+        <button type="button" id="displacement-analysis-btn" class="analysis-btn">Displacement Analysis</button>
       </div>
+    </div>
+
+    <div id="exploded-controls">
+      <span class="controls-panel-label">Reference Views</span>
+      <button type="button" id="exploded-view-btn" class="camera-preset-btn exploded-view">Exploded View</button>
     </div>
 
     <div id="engine-controls">
@@ -746,125 +1782,822 @@
       RIGHT: THREE.MOUSE.PAN,
     };
 
-    // -------------------------------------------------------------------------
-    // Camera presets & smooth transitions
-    // -------------------------------------------------------------------------
-
-    const initialCameraState = {
-      position: new THREE.Vector3(),
-      target: new THREE.Vector3(),
-    };
-
-    const cameraPresets = {
-      front: { position: new THREE.Vector3(), target: new THREE.Vector3() },
-      side: { position: new THREE.Vector3(), target: new THREE.Vector3() },
-      bottom: { position: new THREE.Vector3(), target: new THREE.Vector3() },
-      rear: { position: new THREE.Vector3(), target: new THREE.Vector3() },
-      reset: { position: new THREE.Vector3(), target: new THREE.Vector3() },
-    };
-
-    let activeCameraView = 'reset';
-    let cameraTransition = null;
-    const CAMERA_TRANSITION_SPEED = 4.5;
-
-    const cameraPresetButtons = document.querySelectorAll('.camera-preset-btn');
-
-    function captureInitialCameraState() {
-      initialCameraState.position.copy(camera.position);
-      initialCameraState.target.copy(controls.target);
+    function restoreSceneInteraction() {
+      if (isOverlayActive()) return;
+      controls.enabled = true;
+      refreshHighlights();
+      renderer.domElement.style.cursor = 'grab';
     }
 
-    function getCoreCenter() {
-      const coreMeshes = partsRegistry.get('CORE_TURBINE');
-      if (coreMeshes.length === 0) {
-        return controls.target.clone();
+    function disableSceneInteraction() {
+      clearHover();
+      controls.enabled = false;
+      renderer.domElement.style.cursor = 'default';
+    }
+
+    // -------------------------------------------------------------------------
+    // Stress analysis modal
+    // -------------------------------------------------------------------------
+
+    const STRESS_OVERVIEW_IMAGE_PATH = './Assests/Images/Overview.png';
+    const STRESS_MAP_IMAGE_PATH = './Assests/Images/Stress.png';
+
+    const STRESS_SUMMARY_HTML = `
+      This analysis shows how stress changes along the <strong>blade</strong> from <strong>root</strong> to <strong>tip</strong>.
+      The <strong>highest stress</strong> is at the <strong>root</strong> because it is fixed to the hub and has to carry
+      the load from the entire rotating <strong>blade</strong>. As you move toward the <strong>mid span</strong>, the stress
+      <strong>gradually decreases</strong> as the load is distributed throughout the structure. At the <strong>tip</strong>,
+      the <strong>stress is the lowest</strong> since it is free and not supporting any additional structure. Overall, it shows
+      a smooth and expected reduction in stress from <strong>root</strong> to <strong>tip</strong>, meaning the <strong>blade</strong>
+      is mainly loaded at the <strong>root</strong> while the rest of the structure experiences progressively less demand.
+    `.trim();
+
+    let stressAnalysisActive = false;
+    let stressAnalysisOverlayEl = null;
+    let stressImageLightboxEl = null;
+    let stressImageZoomActive = false;
+
+    const stressAnalysisBtn = document.getElementById('stress-analysis-btn');
+
+    function createStressImageLightbox(imagePath) {
+      const lightbox = document.createElement('div');
+      lightbox.id = 'stress-image-lightbox';
+      lightbox.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'stress-lightbox-close';
+      closeBtn.setAttribute('aria-label', 'Close stress image zoom');
+      closeBtn.textContent = '×';
+
+      const img = document.createElement('img');
+      img.src = imagePath;
+      img.alt = 'Blade stress distribution map full view';
+
+      lightbox.appendChild(closeBtn);
+      lightbox.appendChild(img);
+      document.body.appendChild(lightbox);
+
+      closeBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeStressImageLightbox();
+      });
+
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+          closeStressImageLightbox();
+        }
+      });
+
+      return lightbox;
+    }
+
+    function openStressImageLightbox() {
+      if (!stressImageLightboxEl) {
+        stressImageLightboxEl = createStressImageLightbox(STRESS_MAP_IMAGE_PATH);
       }
 
-      const box = new THREE.Box3();
-      coreMeshes.forEach((mesh) => box.expandByObject(mesh));
-      return box.getCenter(new THREE.Vector3());
-    }
-
-    function buildCameraPresets() {
-      const center = controls.target.clone();
-      const baseDistance = camera.position.distanceTo(center);
-      const coreCenter = getCoreCenter();
-      const rearDistance = baseDistance * 0.72;
-
-      cameraPresets.front.position.copy(center).add(new THREE.Vector3(0, 0, baseDistance));
-      cameraPresets.front.target.copy(center);
-
-      cameraPresets.side.position.copy(center).add(new THREE.Vector3(baseDistance, 0, 0));
-      cameraPresets.side.target.copy(center);
-
-      cameraPresets.bottom.position.copy(center).add(new THREE.Vector3(0, -baseDistance, 0));
-      cameraPresets.bottom.target.copy(center);
-
-      cameraPresets.rear.position.copy(center).add(new THREE.Vector3(0, 0, -rearDistance));
-      cameraPresets.rear.target.copy(center).lerp(coreCenter, 0.35);
-
-      cameraPresets.reset.position.copy(initialCameraState.position);
-      cameraPresets.reset.target.copy(initialCameraState.target);
-    }
-
-    function updateCameraPresetUI() {
-      cameraPresetButtons.forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.view === activeCameraView);
+      stressImageZoomActive = true;
+      stressImageLightboxEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        stressImageLightboxEl.classList.add('visible');
       });
     }
 
-    function beginCameraTransition(toPosition, toTarget, viewName) {
-      cameraTransition = {
-        toPosition: toPosition.clone(),
-        toTarget: toTarget.clone(),
+    function closeStressImageLightbox() {
+      if (!stressImageLightboxEl || !stressImageZoomActive) return;
+
+      stressImageLightboxEl.classList.remove('visible');
+      stressImageLightboxEl.setAttribute('aria-hidden', 'true');
+      stressImageZoomActive = false;
+    }
+
+    function createStressAnalysisOverlay() {
+      const overlay = document.createElement('div');
+      overlay.id = 'stress-analysis-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'stress-close-btn';
+      closeBtn.setAttribute('aria-label', 'Close stress analysis');
+      closeBtn.textContent = '×';
+
+      const panel = document.createElement('div');
+      panel.className = 'stress-panel';
+
+      const panelHeader = document.createElement('div');
+      panelHeader.className = 'stress-panel-header';
+
+      const panelTitle = document.createElement('h2');
+      panelTitle.className = 'stress-panel-title';
+      panelTitle.textContent = 'Blade Stress Analysis';
+
+      const imagesSection = document.createElement('div');
+      imagesSection.className = 'stress-images';
+
+      const overviewCard = document.createElement('div');
+      overviewCard.className = 'stress-image-card';
+
+      const overviewLabel = document.createElement('h3');
+      overviewLabel.className = 'stress-image-label';
+      overviewLabel.textContent = 'Overview';
+
+      const overviewWrap = document.createElement('div');
+      overviewWrap.className = 'stress-image-wrap overview-wrap';
+
+      const overviewImg = document.createElement('img');
+      overviewImg.src = STRESS_OVERVIEW_IMAGE_PATH;
+      overviewImg.alt = 'Blade overview reference diagram';
+      overviewImg.decoding = 'async';
+      overviewImg.loading = 'eager';
+
+      const stressCard = document.createElement('div');
+      stressCard.className = 'stress-image-card';
+
+      const stressLabel = document.createElement('h3');
+      stressLabel.className = 'stress-image-label';
+      stressLabel.textContent = 'Stress';
+
+      const stressWrap = document.createElement('button');
+      stressWrap.type = 'button';
+      stressWrap.className = 'stress-image-wrap stress-zoom-trigger';
+      stressWrap.setAttribute('aria-label', 'Click to zoom stress analysis image');
+
+      const stressImg = document.createElement('img');
+      stressImg.src = STRESS_MAP_IMAGE_PATH;
+      stressImg.alt = 'Blade stress distribution map';
+      stressImg.decoding = 'async';
+      stressImg.loading = 'eager';
+
+      const stressZoomHint = document.createElement('span');
+      stressZoomHint.className = 'stress-zoom-hint';
+      stressZoomHint.textContent = 'Click to zoom';
+
+      const summarySection = document.createElement('div');
+      summarySection.className = 'stress-summary';
+
+      const summaryHeading = document.createElement('h3');
+      summaryHeading.className = 'stress-summary-heading';
+      summaryHeading.textContent = 'Analysis Summary';
+
+      const summaryText = document.createElement('p');
+      summaryText.className = 'stress-summary-text';
+      summaryText.innerHTML = STRESS_SUMMARY_HTML;
+
+      overviewWrap.appendChild(overviewImg);
+      overviewCard.appendChild(overviewLabel);
+      overviewCard.appendChild(overviewWrap);
+
+      stressWrap.appendChild(stressImg);
+      stressWrap.appendChild(stressZoomHint);
+      stressCard.appendChild(stressLabel);
+      stressCard.appendChild(stressWrap);
+
+      imagesSection.appendChild(overviewCard);
+      imagesSection.appendChild(stressCard);
+
+      summarySection.appendChild(summaryHeading);
+      summarySection.appendChild(summaryText);
+
+      panelHeader.appendChild(panelTitle);
+      panel.appendChild(panelHeader);
+      panel.appendChild(imagesSection);
+      panel.appendChild(summarySection);
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(panel);
+      document.body.appendChild(overlay);
+
+      closeBtn.addEventListener('click', closeStressAnalysis);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeStressAnalysis();
+        }
+      });
+
+      stressWrap.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openStressImageLightbox();
+      });
+
+      return overlay;
+    }
+
+    function openStressAnalysis() {
+      if (!stressAnalysisOverlayEl) {
+        stressAnalysisOverlayEl = createStressAnalysisOverlay();
+      }
+
+      stressAnalysisActive = true;
+      disableSceneInteraction();
+      stressAnalysisBtn.classList.add('active');
+
+      stressAnalysisOverlayEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        stressAnalysisOverlayEl.classList.add('visible');
+      });
+    }
+
+    function closeStressAnalysis() {
+      if (!stressAnalysisOverlayEl || !stressAnalysisActive) return;
+
+      closeStressImageLightbox();
+
+      stressAnalysisOverlayEl.classList.remove('visible');
+      stressAnalysisOverlayEl.setAttribute('aria-hidden', 'true');
+
+      let closeFinished = false;
+
+      const finishClose = () => {
+        if (closeFinished) return;
+        closeFinished = true;
+        stressAnalysisActive = false;
+        stressAnalysisBtn.classList.remove('active');
+        restoreSceneInteraction();
       };
-      activeCameraView = viewName;
-      updateCameraPresetUI();
+
+      stressAnalysisOverlayEl.addEventListener('transitionend', finishClose, { once: true });
+      setTimeout(finishClose, 400);
     }
 
-    function resetCameraView() {
-      beginCameraTransition(
-        initialCameraState.position,
-        initialCameraState.target,
-        'reset'
+    function toggleStressAnalysis() {
+      if (stressAnalysisActive) {
+        closeStressAnalysis();
+      } else {
+        openStressAnalysis();
+      }
+    }
+
+    stressAnalysisBtn.addEventListener('click', toggleStressAnalysis);
+
+    // -------------------------------------------------------------------------
+    // Strain analysis modal
+    // -------------------------------------------------------------------------
+
+    const STRAIN_SUMMARY_HTML = `
+      This strain analysis shows how the blade <strong>deforms from root to tip</strong>. At the <strong>root</strong>,
+      the material experiences the <strong>highest strain</strong>, meaning it is being most strongly stretched and deformed
+      due to the load being fixed at the hub. Moving into the <strong>mid span</strong>, the <strong>strain reduces</strong>,
+      meaning the material is still stretching but less intensely as the load is distributed along the blade. At the <strong>tip</strong>,
+      the strain is <strong>lowest</strong>, meaning there is very little additional stretching or deformation compared to the root.
+      Overall, the <strong>blade is mainly in a stretching</strong> but effect is reduced moving towards the tip.
+    `.trim();
+
+    let strainAnalysisActive = false;
+    let strainAnalysisOverlayEl = null;
+    let strainImageLightboxEl = null;
+    let strainImageZoomActive = false;
+
+    const STRAIN_AXIS_ITEMS = [
+      { label: 'XX', path: './Assests/Images/XX.png' },
+      { label: 'YY', path: './Assests/Images/YY.png' },
+      { label: 'ZZ', path: './Assests/Images/ZZ.png' },
+    ];
+
+    const STRAIN_COMPONENT_ITEMS = [
+      { label: 'Strain X', path: './Assests/Images/Strain%20X.png' },
+      { label: 'Strain Y', path: './Assests/Images/Strain%20Y.png' },
+      { label: 'Strain Z', path: './Assests/Images/Strain%20Z.png' },
+    ];
+
+    const strainAnalysisBtn = document.getElementById('strain-analysis-btn');
+
+    function createStrainImageLightbox() {
+      const lightbox = document.createElement('div');
+      lightbox.id = 'strain-image-lightbox';
+      lightbox.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'strain-lightbox-close';
+      closeBtn.setAttribute('aria-label', 'Close strain image zoom');
+      closeBtn.textContent = '×';
+
+      const content = document.createElement('div');
+      content.className = 'strain-lightbox-content';
+
+      lightbox.appendChild(closeBtn);
+      lightbox.appendChild(content);
+      document.body.appendChild(lightbox);
+
+      closeBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeStrainImageLightbox();
+      });
+
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+          closeStrainImageLightbox();
+        }
+      });
+
+      return lightbox;
+    }
+
+    function openStrainImageLightbox(items) {
+      if (!strainImageLightboxEl) {
+        strainImageLightboxEl = createStrainImageLightbox();
+      }
+
+      const content = strainImageLightboxEl.querySelector('.strain-lightbox-content');
+      content.replaceChildren();
+
+      items.forEach(({ label, path }) => {
+        const item = document.createElement('div');
+        item.className = 'strain-lightbox-item';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'strain-lightbox-item-label';
+        labelEl.textContent = label;
+
+        const img = document.createElement('img');
+        img.src = path;
+        img.alt = `${label} strain visualization full view`;
+        img.decoding = 'async';
+        img.loading = 'eager';
+
+        item.appendChild(labelEl);
+        item.appendChild(img);
+        content.appendChild(item);
+      });
+
+      strainImageZoomActive = true;
+      strainImageLightboxEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        strainImageLightboxEl.classList.add('visible');
+      });
+    }
+
+    function closeStrainImageLightbox() {
+      if (!strainImageLightboxEl || !strainImageZoomActive) return;
+
+      strainImageLightboxEl.classList.remove('visible');
+      strainImageLightboxEl.setAttribute('aria-hidden', 'true');
+      strainImageZoomActive = false;
+    }
+
+    function buildStrainDataBox(items, ariaLabel) {
+      const card = document.createElement('div');
+      card.className = 'strain-image-card';
+
+      const wrap = document.createElement('button');
+      wrap.type = 'button';
+      wrap.className = 'strain-data-wrap strain-zoom-trigger';
+      wrap.setAttribute('aria-label', ariaLabel);
+
+      const grid = document.createElement('div');
+      grid.className = 'strain-data-grid';
+
+      items.forEach(({ label, path }) => {
+        const item = document.createElement('div');
+        item.className = 'strain-data-item';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'strain-data-item-label';
+        labelEl.textContent = label;
+
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'strain-data-item-image';
+
+        const img = document.createElement('img');
+        img.src = path;
+        img.alt = `${label} strain visualization`;
+        img.decoding = 'async';
+        img.loading = 'eager';
+
+        imageWrap.appendChild(img);
+        item.appendChild(labelEl);
+        item.appendChild(imageWrap);
+        grid.appendChild(item);
+      });
+
+      const zoomHint = document.createElement('span');
+      zoomHint.className = 'strain-zoom-hint';
+      zoomHint.setAttribute('aria-hidden', 'true');
+      zoomHint.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>';
+
+      wrap.appendChild(grid);
+      wrap.appendChild(zoomHint);
+      wrap.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openStrainImageLightbox(items);
+      });
+
+      card.appendChild(wrap);
+      return card;
+    }
+
+    function createStrainAnalysisOverlay() {
+      const overlay = document.createElement('div');
+      overlay.id = 'strain-analysis-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'strain-close-btn';
+      closeBtn.setAttribute('aria-label', 'Close strain analysis');
+      closeBtn.textContent = '×';
+
+      const panel = document.createElement('div');
+      panel.className = 'strain-panel';
+
+      const panelHeader = document.createElement('div');
+      panelHeader.className = 'strain-panel-header';
+
+      const panelTitle = document.createElement('h2');
+      panelTitle.className = 'strain-panel-title';
+      panelTitle.textContent = 'Blade Strain Analysis';
+
+      const imagesSection = document.createElement('div');
+      imagesSection.className = 'strain-images';
+
+      const axisCard = buildStrainDataBox(STRAIN_AXIS_ITEMS, 'Click to zoom XX, YY, and ZZ strain images');
+      const strainCard = buildStrainDataBox(STRAIN_COMPONENT_ITEMS, 'Click to zoom Strain X, Y, and Z images');
+
+      const summarySection = document.createElement('div');
+      summarySection.className = 'strain-summary';
+
+      const summaryHeading = document.createElement('h3');
+      summaryHeading.className = 'strain-summary-heading';
+      summaryHeading.textContent = 'Analysis Summary';
+
+      const summaryText = document.createElement('p');
+      summaryText.className = 'strain-summary-text';
+      summaryText.innerHTML = STRAIN_SUMMARY_HTML;
+
+      imagesSection.appendChild(axisCard);
+      imagesSection.appendChild(strainCard);
+
+      summarySection.appendChild(summaryHeading);
+      summarySection.appendChild(summaryText);
+
+      panelHeader.appendChild(panelTitle);
+      panel.appendChild(panelHeader);
+      panel.appendChild(imagesSection);
+      panel.appendChild(summarySection);
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(panel);
+      document.body.appendChild(overlay);
+
+      closeBtn.addEventListener('click', closeStrainAnalysis);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeStrainAnalysis();
+        }
+      });
+
+      return overlay;
+    }
+
+    function openStrainAnalysis() {
+      if (!strainAnalysisOverlayEl) {
+        strainAnalysisOverlayEl = createStrainAnalysisOverlay();
+      }
+
+      strainAnalysisActive = true;
+      disableSceneInteraction();
+      strainAnalysisBtn.classList.add('active');
+
+      strainAnalysisOverlayEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        strainAnalysisOverlayEl.classList.add('visible');
+      });
+    }
+
+    function closeStrainAnalysis() {
+      if (!strainAnalysisOverlayEl || !strainAnalysisActive) return;
+
+      closeStrainImageLightbox();
+
+      strainAnalysisOverlayEl.classList.remove('visible');
+      strainAnalysisOverlayEl.setAttribute('aria-hidden', 'true');
+
+      let closeFinished = false;
+
+      const finishClose = () => {
+        if (closeFinished) return;
+        closeFinished = true;
+        strainAnalysisActive = false;
+        strainAnalysisBtn.classList.remove('active');
+        restoreSceneInteraction();
+      };
+
+      strainAnalysisOverlayEl.addEventListener('transitionend', finishClose, { once: true });
+      setTimeout(finishClose, 400);
+    }
+
+    function toggleStrainAnalysis() {
+      if (strainAnalysisActive) {
+        closeStrainAnalysis();
+      } else {
+        openStrainAnalysis();
+      }
+    }
+
+    strainAnalysisBtn.addEventListener('click', toggleStrainAnalysis);
+
+    // -------------------------------------------------------------------------
+    // Displacement analysis modal
+    // -------------------------------------------------------------------------
+
+    const DISPLACEMENT_SUMMARY_HTML = `
+      This displacement analysis shows <strong>how the blade moves from root to tip under loading.</strong> At the <strong>root</strong>,
+      displacement is the <strong>lowest</strong> because the blade is fixed at the hub and cannot move freely, so deformation is minimal.
+      Moving toward the <strong>mid span</strong>, displacement <strong>increases</strong> as the blade begins to bend and the effect of rotation
+      becomes more noticeable. At the <strong>tip</strong>, displacement is <strong>highest</strong> because it is the furthest point from the constraint
+      and experiences the greatest outward movement due to centrifugal loading. Overall, the blade shows increasing displacement from root to tip,
+      meaning it bends outward like a cantilever under rotation, with maximum movement occurring at the tip.
+    `.trim();
+
+    const DISPLACEMENT_MAGNIFIER_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>';
+
+    let displacementAnalysisActive = false;
+    let displacementAnalysisOverlayEl = null;
+    let displacementImageLightboxEl = null;
+    let displacementImageZoomActive = false;
+
+    const DISPLACEMENT_AXIS_ITEMS = [
+      { label: 'DX', path: './Assests/Images/DX.png' },
+      { label: 'DY', path: './Assests/Images/DY.png' },
+      { label: 'DZ', path: './Assests/Images/DZ.png' },
+    ];
+
+    const DISPLACEMENT_COMPONENT_ITEMS = [
+      { label: 'Displacement X', path: './Assests/Images/Displacement%20X.png' },
+      { label: 'Displacement Y', path: './Assests/Images/Displacement%20Y.png' },
+      { label: 'Displacement Z', path: './Assests/Images/Displacement%20Z.png' },
+    ];
+
+    const displacementAnalysisBtn = document.getElementById('displacement-analysis-btn');
+
+    function createDisplacementImageLightbox() {
+      const lightbox = document.createElement('div');
+      lightbox.id = 'displacement-image-lightbox';
+      lightbox.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'displacement-lightbox-close';
+      closeBtn.setAttribute('aria-label', 'Close displacement image zoom');
+      closeBtn.textContent = '×';
+
+      const content = document.createElement('div');
+      content.className = 'displacement-lightbox-content';
+
+      lightbox.appendChild(closeBtn);
+      lightbox.appendChild(content);
+      document.body.appendChild(lightbox);
+
+      closeBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeDisplacementImageLightbox();
+      });
+
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+          closeDisplacementImageLightbox();
+        }
+      });
+
+      return lightbox;
+    }
+
+    function openDisplacementImageLightbox(items) {
+      if (!displacementImageLightboxEl) {
+        displacementImageLightboxEl = createDisplacementImageLightbox();
+      }
+
+      const content = displacementImageLightboxEl.querySelector('.displacement-lightbox-content');
+      content.replaceChildren();
+
+      items.forEach(({ label, path }) => {
+        const item = document.createElement('div');
+        item.className = 'displacement-lightbox-item';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'displacement-lightbox-item-label';
+        labelEl.textContent = label;
+
+        const img = document.createElement('img');
+        img.src = path;
+        img.alt = `${label} displacement visualization full view`;
+        img.decoding = 'async';
+        img.loading = 'eager';
+
+        item.appendChild(labelEl);
+        item.appendChild(img);
+        content.appendChild(item);
+      });
+
+      displacementImageZoomActive = true;
+      displacementImageLightboxEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        displacementImageLightboxEl.classList.add('visible');
+      });
+    }
+
+    function closeDisplacementImageLightbox() {
+      if (!displacementImageLightboxEl || !displacementImageZoomActive) return;
+
+      displacementImageLightboxEl.classList.remove('visible');
+      displacementImageLightboxEl.setAttribute('aria-hidden', 'true');
+      displacementImageZoomActive = false;
+    }
+
+    function buildDisplacementDataBox(items, ariaLabel) {
+      const card = document.createElement('div');
+      card.className = 'displacement-image-card';
+
+      const wrap = document.createElement('button');
+      wrap.type = 'button';
+      wrap.className = 'displacement-data-wrap displacement-zoom-trigger';
+      wrap.setAttribute('aria-label', ariaLabel);
+
+      const grid = document.createElement('div');
+      grid.className = 'displacement-data-grid';
+
+      items.forEach(({ label, path }) => {
+        const item = document.createElement('div');
+        item.className = 'displacement-data-item';
+
+        const labelEl = document.createElement('span');
+        labelEl.className = 'displacement-data-item-label';
+        labelEl.textContent = label;
+
+        const imageWrap = document.createElement('div');
+        imageWrap.className = 'displacement-data-item-image';
+
+        const img = document.createElement('img');
+        img.src = path;
+        img.alt = `${label} displacement visualization`;
+        img.decoding = 'async';
+        img.loading = 'eager';
+
+        imageWrap.appendChild(img);
+        item.appendChild(labelEl);
+        item.appendChild(imageWrap);
+        grid.appendChild(item);
+      });
+
+      const zoomHint = document.createElement('span');
+      zoomHint.className = 'displacement-zoom-hint';
+      zoomHint.setAttribute('aria-hidden', 'true');
+      zoomHint.innerHTML = DISPLACEMENT_MAGNIFIER_SVG;
+
+      wrap.appendChild(grid);
+      wrap.appendChild(zoomHint);
+      wrap.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openDisplacementImageLightbox(items);
+      });
+
+      card.appendChild(wrap);
+      return card;
+    }
+
+    function createDisplacementAnalysisOverlay() {
+      const overlay = document.createElement('div');
+      overlay.id = 'displacement-analysis-overlay';
+      overlay.setAttribute('aria-hidden', 'true');
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'displacement-close-btn';
+      closeBtn.setAttribute('aria-label', 'Close displacement analysis');
+      closeBtn.textContent = '×';
+
+      const panel = document.createElement('div');
+      panel.className = 'displacement-panel';
+
+      const panelHeader = document.createElement('div');
+      panelHeader.className = 'displacement-panel-header';
+
+      const panelTitle = document.createElement('h2');
+      panelTitle.className = 'displacement-panel-title';
+      panelTitle.textContent = 'Blade Displacement Analysis';
+
+      const imagesSection = document.createElement('div');
+      imagesSection.className = 'displacement-images';
+
+      const axisCard = buildDisplacementDataBox(
+        DISPLACEMENT_AXIS_ITEMS,
+        'Click to zoom DX, DY, and DZ displacement images'
       );
+      const componentCard = buildDisplacementDataBox(
+        DISPLACEMENT_COMPONENT_ITEMS,
+        'Click to zoom Displacement X, Y, and Z images'
+      );
+
+      const summarySection = document.createElement('div');
+      summarySection.className = 'displacement-summary';
+
+      const summaryHeading = document.createElement('h3');
+      summaryHeading.className = 'displacement-summary-heading';
+      summaryHeading.textContent = 'Analysis Summary';
+
+      const summaryText = document.createElement('p');
+      summaryText.className = 'displacement-summary-text';
+      summaryText.innerHTML = DISPLACEMENT_SUMMARY_HTML;
+
+      imagesSection.appendChild(axisCard);
+      imagesSection.appendChild(componentCard);
+
+      summarySection.appendChild(summaryHeading);
+      summarySection.appendChild(summaryText);
+
+      panelHeader.appendChild(panelTitle);
+      panel.appendChild(panelHeader);
+      panel.appendChild(imagesSection);
+      panel.appendChild(summarySection);
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(panel);
+      document.body.appendChild(overlay);
+
+      closeBtn.addEventListener('click', closeDisplacementAnalysis);
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) {
+          closeDisplacementAnalysis();
+        }
+      });
+
+      return overlay;
     }
 
-    function setCameraView(viewName) {
-      if (viewName === 'reset') {
-        resetCameraView();
+    function openDisplacementAnalysis() {
+      if (!displacementAnalysisOverlayEl) {
+        displacementAnalysisOverlayEl = createDisplacementAnalysisOverlay();
+      }
+
+      displacementAnalysisActive = true;
+      disableSceneInteraction();
+      displacementAnalysisBtn.classList.add('active');
+
+      displacementAnalysisOverlayEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(() => {
+        displacementAnalysisOverlayEl.classList.add('visible');
+      });
+    }
+
+    function closeDisplacementAnalysis() {
+      if (!displacementAnalysisOverlayEl || !displacementAnalysisActive) return;
+
+      closeDisplacementImageLightbox();
+
+      displacementAnalysisOverlayEl.classList.remove('visible');
+      displacementAnalysisOverlayEl.setAttribute('aria-hidden', 'true');
+
+      let closeFinished = false;
+
+      const finishClose = () => {
+        if (closeFinished) return;
+        closeFinished = true;
+        displacementAnalysisActive = false;
+        displacementAnalysisBtn.classList.remove('active');
+        restoreSceneInteraction();
+      };
+
+      displacementAnalysisOverlayEl.addEventListener('transitionend', finishClose, { once: true });
+      setTimeout(finishClose, 400);
+    }
+
+    function toggleDisplacementAnalysis() {
+      if (displacementAnalysisActive) {
+        closeDisplacementAnalysis();
+      } else {
+        openDisplacementAnalysis();
+      }
+    }
+
+    displacementAnalysisBtn.addEventListener('click', toggleDisplacementAnalysis);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (stressImageZoomActive) {
+        closeStressImageLightbox();
         return;
       }
-
-      const preset = cameraPresets[viewName];
-      if (!preset) return;
-
-      beginCameraTransition(preset.position, preset.target, viewName);
-    }
-
-    function updateCameraTransition(deltaTime) {
-      if (!cameraTransition) return;
-
-      const factor = 1 - Math.exp(-CAMERA_TRANSITION_SPEED * deltaTime);
-      camera.position.lerp(cameraTransition.toPosition, factor);
-      controls.target.lerp(cameraTransition.toTarget, factor);
-
-      const positionDone = camera.position.distanceTo(cameraTransition.toPosition) < 0.008;
-      const targetDone = controls.target.distanceTo(cameraTransition.toTarget) < 0.008;
-
-      if (positionDone && targetDone) {
-        camera.position.copy(cameraTransition.toPosition);
-        controls.target.copy(cameraTransition.toTarget);
-        cameraTransition = null;
+      if (strainImageZoomActive) {
+        closeStrainImageLightbox();
+        return;
       }
-
-      controls.update();
-    }
-
-    cameraPresetButtons.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        setCameraView(btn.dataset.view);
-      });
+      if (displacementImageZoomActive) {
+        closeDisplacementImageLightbox();
+        return;
+      }
+      if (displacementAnalysisActive) {
+        closeDisplacementAnalysis();
+        return;
+      }
+      if (strainAnalysisActive) {
+        closeStrainAnalysis();
+        return;
+      }
+      if (stressAnalysisActive) {
+        closeStressAnalysis();
+      }
     });
 
     // -------------------------------------------------------------------------
@@ -934,9 +2667,7 @@
       }
 
       explodedViewActive = true;
-      clearHover();
-      controls.enabled = false;
-      renderer.domElement.style.cursor = 'default';
+      disableSceneInteraction();
       explodedViewBtn.classList.add('active');
 
       explodedOverlayEl.setAttribute('aria-hidden', 'false');
@@ -957,10 +2688,8 @@
         if (closeFinished) return;
         closeFinished = true;
         explodedViewActive = false;
-        controls.enabled = true;
         explodedViewBtn.classList.remove('active');
-        refreshHighlights();
-        renderer.domElement.style.cursor = 'grab';
+        restoreSceneInteraction();
       };
 
       explodedOverlayEl.addEventListener('transitionend', finishClose, { once: true });
@@ -976,6 +2705,10 @@
     }
 
     explodedViewBtn.addEventListener('click', toggleExplodedView);
+
+    function isOverlayActive() {
+      return explodedViewActive || stressAnalysisActive || strainAnalysisActive || displacementAnalysisActive;
+    }
 
     // -------------------------------------------------------------------------
     // Raycasting & interaction
@@ -1211,7 +2944,7 @@
     }
 
     function handleHover() {
-      if (explodedViewActive || raycastMeshes.length === 0) return;
+      if (isOverlayActive() || raycastMeshes.length === 0) return;
 
       const intersections = raycastHits();
       const groupId =
@@ -1229,7 +2962,7 @@
     }
 
     function handleClick() {
-      if (explodedViewActive || raycastMeshes.length === 0) return;
+      if (isOverlayActive() || raycastMeshes.length === 0) return;
 
       const intersections = raycastHits();
 
@@ -1256,13 +2989,13 @@
     }
 
     function onCanvasClick(event) {
-      if (explodedViewActive || raycastMeshes.length === 0) return;
+      if (isOverlayActive() || raycastMeshes.length === 0) return;
       updatePointer(event);
       handleClick();
     }
 
     function onPointerMove(event) {
-      if (explodedViewActive || raycastMeshes.length === 0) return;
+      if (isOverlayActive() || raycastMeshes.length === 0) return;
       updatePointer(event);
       handleHover();
     }
@@ -1306,11 +3039,6 @@
       controls.minDistance = distance * 0.35;
       controls.maxDistance = distance * 3;
       controls.update();
-
-      captureInitialCameraState();
-      buildCameraPresets();
-      activeCameraView = 'reset';
-      updateCameraPresetUI();
     }
 
     function collectMeshes(object) {
@@ -1552,7 +3280,6 @@
       requestAnimationFrame(animate);
       const deltaTime = clock.getDelta();
       updateEngine(deltaTime);
-      updateCameraTransition(deltaTime);
       controls.update();
       renderer.render(scene, camera);
     }
